@@ -7,50 +7,53 @@
 Migrate a MySQL Database to Google Cloud SQL: Challenge Lab
 
 
-export ZONE=us-central1-b
+1.export ZONE=us-central1-b
 
 
-gcloud sql instances create wordpress --tier=db-n1-standard-1 --activation-policy=ALWAYS --gce-zone $ZONE
+2.gcloud sql instances create wordpress --tier=db-n1-standard-1 --activation-policy=ALWAYS --gce-zone $ZONE
 
 
-gcloud sql users set-password --host % root --instance wordpress --password Password1*
+3.gcloud sql users set-password --host % root --instance wordpress --password Password1*
 
 
-export ADDRESS=35.224.142.38/32
+4.export ADDRESS=35.224.142.38/32
 
 
-gcloud sql instances patch wordpress --authorized-networks $ADDRESS --quiet
+5.gcloud sql instances patch wordpress --authorized-networks $ADDRESS --quiet
 
 
-gcloud compute ssh blog --zone=us-central1-b
+6.gcloud compute ssh blog --zone=us-central1-b
 
 
 
-mysql --host=35.232.25.42 \
+7.mysql --host=35.232.25.42 \
     --user=root --password
   
 
-CREATE DATABASE wordpress;
+8.CREATE DATABASE wordpress;
 CREATE USER 'blogadmin'@'%' IDENTIFIED BY 'Password1*';
 GRANT ALL PRIVILEGES ON wordpress.* TO 'blogadmin'@'%';
 FLUSH PRIVILEGES;
 
 
 
-sudo mysqldump -u root -p Password1* wordpress > wordpress_backup.sql
+9.sudo mysqldump -u root -p Password1* wordpress > wordpress_backup.sql
 
 
 
-mysql --host=35.232.25.42 --user=root --password=Password1* --verbose wordpress < wordpress_backup.sql
+10.mysql --host=35.232.25.42 --user=root --password=Password1* --verbose wordpress < wordpress_backup.sql
 
 
 
 
-sudo service apache2 restart
+11.sudo service apache2 restart
 
 
-cd /var/www/html/wordpress
+12.cd /var/www/html/wordpress
 
 
 
-sudo nano wp-config.php 
+13.sudo nano wp-config.php  -- > replace the local host with cloud sql public IP
+
+/** MySQL hostname */
+define('DB_HOST', '35.232.25.42');
