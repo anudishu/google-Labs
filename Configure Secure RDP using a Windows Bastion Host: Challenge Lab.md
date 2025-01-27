@@ -8,16 +8,16 @@
 # Configure Secure RDP using a Windows Bastion Host
 # https://www.qwiklabs.com/focuses/1737?parent=catalog
 
-#Task. Create the VPC network
+#Task1. Create the VPC network
 
-#  1 : A new non-default VPC has been created
-gcloud compute networks create securenetwork --subnet-mode=custom
+  #  1 : A new non-default VPC has been created
+    gcloud compute networks create securenetwork --subnet-mode=custom
 
-# 2 : The new VPC contains a new non-default subnet within it
-gcloud compute networks subnets create securenetwork --network=securenetwork --region=us-east4 --range=192.168.1.0/24
+  # 2 : The new VPC contains a new non-default subnet within it
+   gcloud compute networks subnets create securenetwork --network=securenetwork --region=us-east4 --range=192.168.1.0/24
 
-#  3 : A firewall rule exists that allows TCP port 3389 traffic ( for RDP )
-gcloud compute firewall-rules create myfirewalls --network securenetwork --allow=tcp:3389 --target-tags=rdp
+ #  3 : A firewall rule exists that allows TCP port 3389 traffic ( for RDP )
+   gcloud compute firewall-rules create myfirewalls --network securenetwork --allow=tcp:3389 --target-tags=rdp
 
 
 
