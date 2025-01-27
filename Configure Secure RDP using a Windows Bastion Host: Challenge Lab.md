@@ -26,7 +26,7 @@
 Configure the first network interface with an internal only connection to the newly created VPC subnet.
 The second network interface with an internal only connection to the default VPC network. This is the secure server.
 
-gcloud compute instances create vm-securehost \
+ gcloud compute instances create vm-securehost \
   --zone=us-east4-a \
   --machine-type=n1-standard-2 \
   --network-interface=subnet=securenetwork,no-address \
@@ -46,7 +46,7 @@ gcloud compute instances create vm-securehost \
 Configure the first network interface to connect to the newly created VPC subnet with an ephemeral public (external NAT) address.
 The second network interface with an internal only connection to the default VPC network. This is the jump box or bastion host.
 
-gcloud compute instances create vm-bastionhost \
+ gcloud compute instances create vm-bastionhost \
   --zone=us-east4-a \
   --machine-type=n1-standard-2 \
   --network-interface=subnet=securenetwork,network-tier=PREMIUM \
