@@ -14,10 +14,10 @@
     gcloud compute networks create securenetwork --subnet-mode=custom
 
   # 2 : The new VPC contains a new non-default subnet within it
-   gcloud compute networks subnets create securenetwork --network=securenetwork --region=us-east4 --range=192.168.1.0/24
+    gcloud compute networks subnets create securenetwork --network=securenetwork --region=us-east4 --range=192.168.1.0/24
 
  #  3 : A firewall rule exists that allows TCP port 3389 traffic ( for RDP )
-   gcloud compute firewall-rules create myfirewalls --network securenetwork --allow=tcp:3389 --target-tags=rdp
+    gcloud compute firewall-rules create myfirewalls --network securenetwork --allow=tcp:3389 --target-tags=rdp
 
 
 
