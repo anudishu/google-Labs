@@ -1,17 +1,18 @@
 export REGION=europe-west1  
 export BUCKET_NAME=qwiklabs-gcp-01-026491e087be
 
+====
 
 gcloud spanner instances create banking-ops-instance \
     --config=regional-$REGION \
     --description="Banking Operations Instance" \
     --nodes=1
-
+====
 
 gcloud spanner databases create banking-ops-db \
     --instance=banking-ops-instance
 
-
+=====
 
 CREATE TABLE Portfolio (
   PortfolioId INT64 NOT NULL,
@@ -42,7 +43,7 @@ CREATE TABLE Customer (
   Location STRING(MAX) NOT NULL
 ) PRIMARY KEY (CustomerId);
 
-
+=======
 
 INSERT INTO Portfolio (PortfolioId, Name, ShortName, PortfolioInfo) VALUES
   (1, "Banking", "Bnkg", "All Banking Business"),
@@ -69,13 +70,15 @@ INSERT INTO Product (ProductId, CategoryId, PortfolioId, ProductName, ProductAss
   (8, 4, 3, "Permanent Life Insurance", "PermLife", "Insurance LOB"),
   (9, 2, 2, "US Savings Bonds", "USSavBond", "Investment LOB");
 
+======
 
 gsutil cp gs://cloud-training/OCBL375/Customer_List_500.csv .
 
-
+======
 gcloud services enable dataflow.googleapis.com
 gcloud services enable spanner.googleapis.com
 
+======
 
 
 
@@ -98,27 +101,27 @@ cat > manifest.json << EOF_CP
 }
 EOF_CP
 
-
+=====
 
 
 
 gcloud storage buckets create gs://$BUCKET_NAME --location=$REGION
 gsutil cp manifest.json gs://$BUCKET_NAME
 
-
+=====
 
 gcloud dataflow jobs run spanner-import-job \
     --gcs-location=gs://dataflow-templates/latest/GCS_Text_to_Cloud_Spanner \
     --region=$REGION\
     --parameters=instanceId="banking-ops-instance",databaseId="banking-ops-db",importManifest="gs://$BUCKET_NAME/manifest.json"
 
-
+======
 
 
 gcloud spanner databases ddl update banking-ops-db \
 --instance=banking-ops-instance \
 --ddl="ALTER TABLE Category ADD COLUMN MarketingBudget INT64;"
 
-
+======
 
 gcloud spanner databases ddl describe banking-ops-db --instance=banking-ops-instance
