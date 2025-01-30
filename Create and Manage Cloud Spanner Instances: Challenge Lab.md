@@ -1,33 +1,48 @@
-export REGION=europe-west1  
-export BUCKET_NAME=qwiklabs-gcp-01-026491e087be
 
-====
+## Environment Setup
 
+- 🌍 Set the region:
+  ```sh
+  export REGION=europe-west1  
+  export BUCKET_NAME=qwiklabs-gcp-01-026491e087be
+ Public code references from 1 repository
+Create Spanner Instance
+🏛 Create the Spanner instance:
+
+sh
 gcloud spanner instances create banking-ops-instance \
     --config=regional-$REGION \
     --description="Banking Operations Instance" \
     --nodes=1
-====
+ Public code references from 1 repository
+🗄 Create the Spanner database:
 
+sh
 gcloud spanner databases create banking-ops-db \
     --instance=banking-ops-instance
+ Public code references from 1 repository
+Create Tables
+📊 Create the Portfolio table:
 
-=====
-
+SQL
 CREATE TABLE Portfolio (
   PortfolioId INT64 NOT NULL,
   Name STRING(MAX),
   ShortName STRING(MAX),
   PortfolioInfo STRING(MAX)
 ) PRIMARY KEY (PortfolioId);
+📊 Create the Category table:
 
+SQL
 CREATE TABLE Category (
   CategoryId INT64 NOT NULL,
   PortfolioId INT64 NOT NULL,
   CategoryName STRING(MAX),
   PortfolioInfo STRING(MAX)
 ) PRIMARY KEY (CategoryId);
+📊 Create the Product table:
 
+SQL
 CREATE TABLE Product (
   ProductId INT64 NOT NULL,
   CategoryId INT64 NOT NULL,
@@ -36,29 +51,37 @@ CREATE TABLE Product (
   ProductAssetCode STRING(25),
   ProductClass STRING(25)
 ) PRIMARY KEY (ProductId);
+ Public code references from 1 repository
+📊 Create the Customer table:
 
+SQL
 CREATE TABLE Customer (
   CustomerId STRING(36) NOT NULL,
   Name STRING(MAX) NOT NULL,
   Location STRING(MAX) NOT NULL
 ) PRIMARY KEY (CustomerId);
+ Public code references from 1 repository
+Insert Data
+🌱 Insert data into Portfolio:
 
-=======
-
+SQL
 INSERT INTO Portfolio (PortfolioId, Name, ShortName, PortfolioInfo) VALUES
   (1, "Banking", "Bnkg", "All Banking Business"),
   (2, "Asset Growth", "AsstGrwth", "All Asset Focused Products"),
   (3, "Insurance", "Insurance", "All Insurance Focused Products");
+ Public code references from 1 repository
+🌱 Insert data into Category:
 
-
-
+SQL
 INSERT INTO Category (CategoryId, PortfolioId, CategoryName, PortfolioInfo) VALUES
   (1, 1, "Cash", NULL),
   (2, 2, "Investments - Short Return", NULL),
   (3, 2, "Annuities", NULL),
   (4, 3, "Life Insurance", NULL);
+ Public code references from 1 repository
+🌱 Insert data into Product:
 
-
+SQL
 INSERT INTO Product (ProductId, CategoryId, PortfolioId, ProductName, ProductAssetCode, ProductClass) VALUES
   (1, 1, 1, "Checking Account", "ChkAcct", "Banking LOB"),
   (2, 2, 2, "Mutual Fund Consumer Goods", "MFundCG", "Investment LOB"),
@@ -69,20 +92,23 @@ INSERT INTO Product (ProductId, CategoryId, PortfolioId, ProductName, ProductAss
   (7, 1, 1, "Auto Loan", "AutLn", "Banking LOB"),
   (8, 4, 3, "Permanent Life Insurance", "PermLife", "Insurance LOB"),
   (9, 2, 2, "US Savings Bonds", "USSavBond", "Investment LOB");
+ Public code references from 1 repository
+Data Flow and Storage
+📂 Copy the CSV file:
 
-======
-
+sh
 gsutil cp gs://cloud-training/OCBL375/Customer_List_500.csv .
+ Public code references from 1 repository
+🚀 Enable necessary services:
 
-======
+sh
 gcloud services enable dataflow.googleapis.com
 gcloud services enable spanner.googleapis.com
+ Public code references from 1 repository
+Manifest and Data Import
+📝 Create the manifest file:
 
-======
-
-
-
-
+sh
 cat > manifest.json << EOF_CP
 {
   "tables": [
@@ -100,28 +126,34 @@ cat > manifest.json << EOF_CP
   ]
 }
 EOF_CP
+ Public code references from 1 repository
+📂 Create a storage bucket and upload the manifest:
 
-=====
-
-
-
+sh
 gcloud storage buckets create gs://$BUCKET_NAME --location=$REGION
 gsutil cp manifest.json gs://$BUCKET_NAME
+ Public code references from 1 repository
+🚀 Run the Dataflow job:
 
-=====
-
+sh
 gcloud dataflow jobs run spanner-import-job \
     --gcs-location=gs://dataflow-templates/latest/GCS_Text_to_Cloud_Spanner \
     --region=$REGION\
     --parameters=instanceId="banking-ops-instance",databaseId="banking-ops-db",importManifest="gs://$BUCKET_NAME/manifest.json"
+ Public code references from 1 repository
+Database Schema Updates
+🔧 Add a new column to the Category table:
 
-======
-
-
+sh
 gcloud spanner databases ddl update banking-ops-db \
 --instance=banking-ops-instance \
 --ddl="ALTER TABLE Category ADD COLUMN MarketingBudget INT64;"
+ Public code references from 1 repository
+📜 Describe the database schema:
 
-======
-
+sh
 gcloud spanner databases ddl describe banking-ops-db --instance=banking-ops-instance
+ Public code references from 1 repository
+Code
+3. Commit and push the changes to the repository.
+ Public code references from 1 repository
